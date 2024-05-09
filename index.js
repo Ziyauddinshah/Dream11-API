@@ -31,6 +31,7 @@ async function run() {
   } finally {
   }
 }
+run();
 
 // Endpoints
 app.get("/get-all-team", async (req, res) => {
@@ -823,8 +824,7 @@ app.post("/add-team", async (req, res) => {
   }
 });
 
-run();
 var PORT = process.env.PORT;
 app.listen(PORT, () => {
-  console.log("server is renning on " + PORT);
+  console.log("server is running on " + PORT);
 });
