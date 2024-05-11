@@ -46,7 +46,7 @@ app.get("/get-all-team", async (req, res) => {
 app.get("/process-result", async (req, res) => {
   const cursor = await db.collection(DB_COLLECTION_NAME).find();
   const data = [];
-  const cursorData = [];
+  const teamResultData = [];
   for await (const doc of cursor) {
     var mp = new Map();
     for await (const player of doc.players) {
@@ -58,7 +58,7 @@ app.get("/process-result", async (req, res) => {
       });
     }
     data.push(mp);
-    cursorData.push(doc);
+    teamResultData.push(doc);
   }
 
   for (let data1 of data) {
@@ -333,6 +333,7 @@ app.get("/process-result", async (req, res) => {
       flag = false;
     }
   }
+  
   // bonus points for 100/50/30 ya wicket 3/4/5 ya catch 3/4/5
   for (const data1 of data) {
     data1.forEach((value, key) => {
@@ -357,27 +358,27 @@ app.get("/process-result", async (req, res) => {
   }
 
   // bonus points for captain and vice_captain
-  for (let i = 0; i < cursorData.length; i++) {
-    const captain = cursorData[i].captain;
-    const vice_captain = cursorData[i].vice_captain;
-    if (data[i].get(captain)) {
-      const runs = data[i].get(captain).runs;
-      const points = 2 * data[i].get(captain).points;
-      const wicketCount = data[i].get(captain).wicketCount;
-      const catchCount = data[i].get(captain).catchCount;
-      data[i].set(captain, {
+  for (let index = 0; index < teamResultData.length; index++) {
+    const captain = teamResultData[index].captain;
+    const vice_captain = teamResultData[index].vice_captain;
+    if (data[index].get(captain)) {
+      const runs = data[index].get(captain).runs;
+      const points = 2 * data[index].get(captain).points;
+      const wicketCount = data[index].get(captain).wicketCount;
+      const catchCount = data[index].get(captain).catchCount;
+      data[index].set(captain, {
         runs: runs,
         points: points,
         wicketCount: wicketCount,
         catchCount: catchCount,
       });
     }
-    if (data[i].get(vice_captain)) {
-      const runs = data[i].get(vice_captain).runs;
-      const points = 1.5 * data[i].get(vice_captain).points;
-      const wicketCount = data[i].get(vice_captain).wicketCount;
-      const catchCount = data[i].get(vice_captain).catchCount;
-      data[i].set(vice_captain, {
+    if (data[index].get(vice_captain)) {
+      const runs = data[index].get(vice_captain).runs;
+      const points = 1.5 * data[index].get(vice_captain).points;
+      const wicketCount = data[index].get(vice_captain).wicketCount;
+      const catchCount = data[index].get(vice_captain).catchCount;
+      data[index].set(vice_captain, {
         runs: runs,
         points: points,
         wicketCount: wicketCount,
@@ -386,27 +387,29 @@ app.get("/process-result", async (req, res) => {
     }
   }
 
-  for (let i = 0; i < cursorData.length; i++) {
+  for (let index = 0; index < teamResultData.length; index++) {
     const objArray = [];
     let team_total_points = 0;
-    for (const [key, value] of data[i]) {
+    for (const [key, value] of data[index]) {
       team_total_points += value.points;
       const obj = {
         [key]: value,
       };
       objArray.push(obj);
     }
-    cursorData[i].players_points = objArray;
-    cursorData[i].total_points = team_total_points;
+    teamResultData[index].players_points = objArray;
+    teamResultData[index].total_points = team_total_points;
   }
-  cursorData.sort((a, b) => (a.total_points > b.total_points ? -1 : 1));
-  res.status(200).json(cursorData);
+
+  teamResultData.sort((a, b) => (a.total_points > b.total_points ? -1 : 1));
+  res.status(200).json(teamResultData);
+
 });
 
 app.get("/team-result", async (req, res) => {
   const cursor = await db.collection(DB_COLLECTION_NAME).find();
   const data = [];
-  const cursorData = [];
+  const teamResultData = [];
   for await (const doc of cursor) {
     var mp = new Map();
     for await (const player of doc.players) {
@@ -418,7 +421,7 @@ app.get("/team-result", async (req, res) => {
       });
     }
     data.push(mp);
-    cursorData.push(doc);
+    teamResultData.push(doc);
   }
 
   for (let data1 of data) {
@@ -693,6 +696,7 @@ app.get("/team-result", async (req, res) => {
       flag = false;
     }
   }
+
   // bonus points for 100/50/30 ya wicket 3/4/5 ya catch 3/4/5
   for (const data1 of data) {
     data1.forEach((value, key) => {
@@ -717,27 +721,27 @@ app.get("/team-result", async (req, res) => {
   }
 
   // bonus points for captain and vice_captain
-  for (let i = 0; i < cursorData.length; i++) {
-    const captain = cursorData[i].captain;
-    const vice_captain = cursorData[i].vice_captain;
-    if (data[i].get(captain)) {
-      const runs = data[i].get(captain).runs;
-      const points = 2 * data[i].get(captain).points;
-      const wicketCount = data[i].get(captain).wicketCount;
-      const catchCount = data[i].get(captain).catchCount;
-      data[i].set(captain, {
+  for (let index = 0; index < teamResultData.length; index++) {
+    const captain = teamResultData[index].captain;
+    const vice_captain = teamResultData[index].vice_captain;
+    if (data[index].get(captain)) {
+      const runs = data[index].get(captain).runs;
+      const points = 2 * data[index].get(captain).points;
+      const wicketCount = data[index].get(captain).wicketCount;
+      const catchCount = data[index].get(captain).catchCount;
+      data[index].set(captain, {
         runs: runs,
         points: points,
         wicketCount: wicketCount,
         catchCount: catchCount,
       });
     }
-    if (data[i].get(vice_captain)) {
-      const runs = data[i].get(vice_captain).runs;
-      const points = 1.5 * data[i].get(vice_captain).points;
-      const wicketCount = data[i].get(vice_captain).wicketCount;
-      const catchCount = data[i].get(vice_captain).catchCount;
-      data[i].set(vice_captain, {
+    if (data[index].get(vice_captain)) {
+      const runs = data[index].get(vice_captain).runs;
+      const points = 1.5 * data[index].get(vice_captain).points;
+      const wicketCount = data[index].get(vice_captain).wicketCount;
+      const catchCount = data[index].get(vice_captain).catchCount;
+      data[index].set(vice_captain, {
         runs: runs,
         points: points,
         wicketCount: wicketCount,
@@ -746,22 +750,22 @@ app.get("/team-result", async (req, res) => {
     }
   }
 
-  for (let i = 0; i < cursorData.length; i++) {
+  for (let index = 0; index < teamResultData.length; index++) {
     const objArray = [];
     let team_total_points = 0;
-    for (const [key, value] of data[i]) {
+    for (const [key, value] of data[index]) {
       team_total_points += value.points;
       const obj = {
         [key]: value,
       };
       objArray.push(obj);
     }
-    cursorData[i].players_points = objArray;
-    cursorData[i].total_points = team_total_points;
+    teamResultData[index].players_points = objArray;
+    teamResultData[index].total_points = team_total_points;
   }
-  cursorData.sort((a, b) => (a.total_points > b.total_points ? -1 : 1));
-  const teamResult = cursorData[0];
-  res.status(200).json(teamResult);
+  teamResultData.sort((a, b) => (a.total_points > b.total_points ? -1 : 1));
+  const winnerTeamResult = teamResultData[0];
+  res.status(200).json(winnerTeamResult);
 });
 
 app.post("/add-team", async (req, res) => {
@@ -785,20 +789,20 @@ app.post("/add-team", async (req, res) => {
   if (element.length !== 11) {
     res.send("team must have 11 players");
   }
-  for (let j = 0; j < element.length; j++) {
-    if (element[j].role === "Batter") {
+  for (let index = 0; index < element.length; index++) {
+    if (element[index].role === "Batter") {
       bat = 1;
-    } else if (element[j].role === "Bowler") {
+    } else if (element[index].role === "Bowler") {
       blr = 1;
-    } else if (element[j].role === "Wicket Keeper") {
+    } else if (element[index].role === "Wicket Keeper") {
       wk = 1;
-    } else if (element[j].role === "All Rounder") {
+    } else if (element[index].role === "All Rounder") {
       ar = 1;
     }
-    if (mp.get(element[j].team)) {
-      mp.set(element[j].team, mp.get(element[j].team) + 1);
+    if (mp.get(element[index].team)) {
+      mp.set(element[index].team, mp.get(element[index].team) + 1);
     } else {
-      mp.set(element[j].team, 1);
+      mp.set(element[index].team, 1);
     }
   }
 
@@ -816,11 +820,11 @@ app.post("/add-team", async (req, res) => {
       "Add minimum 1 player from one team and maximum 10 player from another team"
     );
   }
-  const result = await db.collection(DB_COLLECTION_NAME).insertMany(req.body);
-  if (result.insertedCount) {
+  const response = await db.collection(DB_COLLECTION_NAME).insertMany(req.body);
+  if (response.insertedCount) {
     res.send("team added successfully");
   } else {
-    res.json({ massage: "failed", data: result });
+    res.json({ massage: "failed", data: response });
   }
 });
 
